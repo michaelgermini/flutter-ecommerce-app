@@ -6,9 +6,6 @@ A modern, responsive e-commerce application built with Flutter featuring adaptiv
 
 ![Application Screenshot](index.png)
 
-### 📱 **Tablet Interface**
-![Tablet View](tablet.png)
-
 ### 🛒 **E-Commerce Functionality**
 - **Product catalog** with SVG images and detailed specifications
 - **Smart filtering** by category and real-time search
@@ -38,6 +35,13 @@ A modern, responsive e-commerce application built with Flutter featuring adaptiv
 - **Performance optimized** with efficient rendering
 - **Clean architecture** following Flutter best practices
 - **Cross-platform compatibility** for iOS, Android, Web, and Desktop
+
+## 📱 **Adaptive Design Showcase**
+
+### **Tablet Interface**
+![Tablet Interface](tablet.png)
+
+*Responsive tablet layout with adaptive sidebar navigation and optimized touch targets*
 
 ## 🎯 **Screenshots & Demos**
 
