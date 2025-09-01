@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../providers/product_provider.dart';
 import '../providers/app_provider.dart';
 import '../widgets/product_card.dart';
 import '../widgets/category_chips.dart';
 import '../widgets/micro_interactions.dart';
+import '../widgets/hero_section.dart';
+import '../widgets/modern_header.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,49 +15,122 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final productProvider = context.watch<ProductProvider>();
     final appProvider = context.watch<AppProvider>();
+    final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       body: CustomScrollView(
         slivers: [
-          // Hero banner
-          SliverToBoxAdapter(
-            child: Container(
-              width: double.infinity,
-              height: 200,
-              margin: const EdgeInsets.all(16),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: SvgPicture.asset(
-                  'assets/images/banners/welcome-banner.svg',
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: 200,
+          // Modern header
+          SliverAppBar(
+            expandedHeight: 120,
+            floating: false,
+            pinned: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                'Welcome Back!',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: const Color(0xFF1F2937),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF6366F1).withOpacity(0.05),
+                      const Color(0xFFEC4899).withOpacity(0.05),
+                    ],
+                  ),
                 ),
               ),
             ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.search, color: Color(0xFF6366F1)),
+                onPressed: () {
+                  // TODO: Implement search
+                },
+              ),
+              const SizedBox(width: 8),
+            ],
           ),
 
-          // Quick actions
+          // Hero section
+          SliverToBoxAdapter(
+            child: HeroSection(
+              title: 'Discover Amazing Products',
+              subtitle: 'Shop the latest trends with our curated collection of premium products',
+              buttonText: 'Explore Now',
+              onButtonPressed: () => appProvider.navigateToProducts(),
+            ),
+          ),
+
+          // Categories section
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: _buildQuickActionButton(
-                      context,
-                      'Shop Now',
-                      Icons.shopping_bag,
-                      () => appProvider.navigateToProducts(),
+                  Text(
+                    'Shop by Category',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      color: const Color(0xFF1F2937),
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildQuickActionButton(
-                      context,
-                      'Categories',
-                      Icons.category,
-                      () => appProvider.navigateToProducts(),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 90,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        CategoryCard(
+                          title: 'Electronics',
+                          icon: Icons.phone_android,
+                          color: const Color(0xFF6366F1),
+                          onTap: () {
+                            productProvider.setSelectedCategory('Electronics');
+                            appProvider.navigateToProducts();
+                          },
+                        ),
+                        const SizedBox(width: 12),
+                        CategoryCard(
+                          title: 'Fashion',
+                          icon: Icons.checkroom,
+                          color: const Color(0xFFEC4899),
+                          onTap: () {
+                            productProvider.setSelectedCategory('Fashion');
+                            appProvider.navigateToProducts();
+                          },
+                        ),
+                        const SizedBox(width: 12),
+                        CategoryCard(
+                          title: 'Home',
+                          icon: Icons.home,
+                          color: const Color(0xFF10B981),
+                          onTap: () {
+                            productProvider.setSelectedCategory('Home');
+                            appProvider.navigateToProducts();
+                          },
+                        ),
+                        const SizedBox(width: 12),
+                        CategoryCard(
+                          title: 'Sports',
+                          icon: Icons.sports_soccer,
+                          color: const Color(0xFFF59E0B),
+                          onTap: () {
+                            productProvider.setSelectedCategory('Sports');
+                            appProvider.navigateToProducts();
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -64,44 +138,76 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          // Categories
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                'Shop by Category',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-
+          // Features section
           SliverToBoxAdapter(
-            child: SizedBox(
-              height: 50,
-              child: CategoryChips(
-                categories: productProvider.categories,
-                selectedCategory: productProvider.selectedCategory,
-                onCategorySelected: (category) {
-                  productProvider.setSelectedCategory(category);
-                  appProvider.navigateToProducts();
-                },
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Why Choose Us',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      color: const Color(0xFF1F2937),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const FeatureCard(
+                    title: 'Free Shipping',
+                    description: 'Free shipping on orders over \$50',
+                    icon: Icons.local_shipping,
+                    color: Color(0xFF6366F1),
+                  ),
+                  const SizedBox(height: 12),
+                  const FeatureCard(
+                    title: 'Secure Payment',
+                    description: '100% secure payment processing',
+                    icon: Icons.security,
+                    color: Color(0xFF10B981),
+                  ),
+                  const SizedBox(height: 12),
+                  const FeatureCard(
+                    title: '24/7 Support',
+                    description: 'Round the clock customer support',
+                    icon: Icons.support_agent,
+                    color: Color(0xFFEC4899),
+                  ),
+                ],
               ),
             ),
           ),
 
           // Featured Products
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                'Featured Products',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Featured Products',
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: const Color(0xFF1F2937),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => appProvider.navigateToProducts(),
+                        child: Text(
+                          'View All',
+                          style: TextStyle(
+                            color: const Color(0xFF6366F1),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -111,9 +217,9 @@ class HomeScreen extends StatelessWidget {
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.7,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
+                childAspectRatio: 0.75,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -133,15 +239,35 @@ class HomeScreen extends StatelessWidget {
           ),
 
           // New Arrivals
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                'New Arrivals',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'New Arrivals',
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: const Color(0xFF1F2937),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => appProvider.navigateToProducts(),
+                        child: Text(
+                          'View All',
+                          style: TextStyle(
+                            color: const Color(0xFF6366F1),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -151,9 +277,9 @@ class HomeScreen extends StatelessWidget {
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.7,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
+                childAspectRatio: 0.75,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -174,46 +300,9 @@ class HomeScreen extends StatelessWidget {
 
           // Bottom padding
           const SliverToBoxAdapter(
-            child: SizedBox(height: 80),
+            child: SizedBox(height: 100),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildQuickActionButton(
-    BuildContext context,
-    String title,
-    IconData icon,
-    VoidCallback onPressed,
-  ) {
-    return MicroInteractions.animatedButton(
-      onPressed: onPressed,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

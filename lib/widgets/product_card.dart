@@ -23,6 +23,7 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cartProvider = context.watch<CartProvider>();
     final isInCart = cartProvider.isInCart(product.id);
+    final theme = Theme.of(context);
 
     return MicroInteractions.rippleContainer(
       onTap: onTap ?? () {
@@ -32,176 +33,299 @@ class ProductCard extends StatelessWidget {
           ),
         );
       },
-      borderRadius: BorderRadius.circular(12),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF1F2937).withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+              spreadRadius: 0,
+            ),
+            BoxShadow(
+              color: const Color(0xFF1F2937).withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product image
-            AspectRatio(
-              aspectRatio: 1,
-              child: product.imageUrl.startsWith('assets/') 
-                ? (product.imageUrl.endsWith('.svg') 
-                  ? SvgPicture.asset(
-                      product.imageUrl,
-                      fit: BoxFit.cover,
-                      placeholderBuilder: (context) => Container(
-                        color: Colors.grey[200],
-                        child: const Center(
-                          child: CircularProgressIndicator(),
+            // Product image with gradient overlay
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: product.imageUrl.startsWith('assets/') 
+                      ? (product.imageUrl.endsWith('.svg') 
+                        ? SvgPicture.asset(
+                            product.imageUrl,
+                            fit: BoxFit.cover,
+                            placeholderBuilder: (context) => Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    const Color(0xFF6366F1).withOpacity(0.1),
+                                    const Color(0xFFEC4899).withOpacity(0.1),
+                                  ],
+                                ),
+                              ),
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFF6366F1),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Image.asset(
+                            product.imageUrl,
+                            fit: BoxFit.cover,
+                          ))
+                      : CachedNetworkImage(
+                          imageUrl: product.imageUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  const Color(0xFF6366F1).withOpacity(0.1),
+                                  const Color(0xFFEC4899).withOpacity(0.1),
+                                ],
+                              ),
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF6366F1),
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  const Color(0xFF6366F1).withOpacity(0.1),
+                                  const Color(0xFFEC4899).withOpacity(0.1),
+                                ],
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.image_not_supported,
+                              color: Color(0xFF6366F1),
+                              size: 32,
+                            ),
+                          ),
                         ),
-                      ),
-                    )
-                  : Image.asset(
-                      product.imageUrl,
-                      fit: BoxFit.cover,
-                    ))
-                : CachedNetworkImage(
-                    imageUrl: product.imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: Colors.grey[200],
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                  ),
+                ),
+                
+                // Category badge
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6366F1).withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    errorWidget: (context, url, error) => Container(
-                      color: Colors.grey[200],
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        color: Colors.grey,
+                    child: Text(
+                      product.category,
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
                       ),
                     ),
                   ),
+                ),
+
+                // Stock status badge
+                if (!product.isInStock)
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Text(
+                        'Out of Stock',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                else if (product.stockQuantity < 10)
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'Only ${product.stockQuantity} left',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
 
             // Product info
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  // Category
-                  Text(
-                    product.category,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Product name
-                  Text(
-                    product.name,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Rating
-                  Row(
-                    children: [
-                      RatingBar.builder(
-                        initialRating: product.rating,
-                        minRating: 1,
-                        direction: Axis.horizontal,
-                        allowHalfRating: true,
-                        itemCount: 5,
-                        itemSize: 12,
-                        ignoreGestures: true,
-                        itemBuilder: (context, _) => const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        onRatingUpdate: (rating) {},
+                    // Product name
+                    Text(
+                      product.name,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: const Color(0xFF1F2937),
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '(${product.reviewCount})',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
 
-                  // Price and Add to Cart
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '\$${product.price.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
+                    // Rating
+                    Row(
+                      children: [
+                        RatingBar.builder(
+                          initialRating: product.rating,
+                          minRating: 1,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 5,
+                          itemSize: 14,
+                          ignoreGestures: true,
+                          itemBuilder: (context, _) => const Icon(
+                            Icons.star_rounded,
+                            color: Color(0xFFFFD700),
+                          ),
+                          onRatingUpdate: (rating) {},
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '(${product.reviewCount})',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: const Color(0xFF6B7280),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                                            MicroInteractions.animatedIconButton(
-                        icon: isInCart ? Icons.remove_shopping_cart : Icons.add_shopping_cart,
-                        onPressed: () {
-                          if (isInCart) {
-                            cartProvider.removeItem(product.id);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('${product.name} removed from cart'),
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                          } else {
-                            cartProvider.addItem(product);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('${product.name} added to cart'),
-                                duration: const Duration(seconds: 2),
-                                action: SnackBarAction(
-                                  label: 'View Cart',
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => const CartScreen(),
-                                      ),
-                                    );
-                                  },
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Price and Add to Cart
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '\$${product.price.toStringAsFixed(2)}',
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF6366F1),
                                 ),
                               ),
-                            );
-                          }
-                        },
-                        color: isInCart ? Colors.red : Theme.of(context).colorScheme.primary,
-                      ),
-                    ],
-                  ),
-
-                  // Stock status
-                  if (!product.isInStock)
-                    Text(
-                      'Out of Stock',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.red[700],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    )
-                  else if (product.stockQuantity < 10)
-                    Text(
-                      'Only ${product.stockQuantity} left',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.orange[700],
-                        fontWeight: FontWeight.w500,
-                      ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: isInCart 
+                                ? [Colors.red.shade400, Colors.red.shade600]
+                                : [const Color(0xFF6366F1), const Color(0xFF4F46E5)],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (isInCart ? Colors.red : const Color(0xFF6366F1)).withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: MicroInteractions.animatedIconButton(
+                            icon: isInCart ? Icons.remove_shopping_cart : Icons.add_shopping_cart,
+                            onPressed: () {
+                              if (isInCart) {
+                                cartProvider.removeItem(product.id);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('${product.name} removed from cart'),
+                                    duration: const Duration(seconds: 2),
+                                    backgroundColor: Colors.red.shade600,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                cartProvider.addItem(product);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('${product.name} added to cart'),
+                                    duration: const Duration(seconds: 2),
+                                    backgroundColor: const Color(0xFF6366F1),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    action: SnackBarAction(
+                                      label: 'View Cart',
+                                      textColor: Colors.white,
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => const CartScreen(),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

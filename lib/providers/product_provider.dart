@@ -134,9 +134,6 @@ class ProductProvider with ChangeNotifier {
 
   // Load sample products for demo
   void loadSampleProducts() {
-    _products.clear();
-    _categories.clear();
-
     final sampleProducts = [
       Product(
         id: '1',
@@ -150,8 +147,8 @@ class ProductProvider with ChangeNotifier {
         isInStock: true,
         stockQuantity: 50,
         images: [
-          'https://via.placeholder.com/300x300/007AFF/FFFFFF?text=iPhone+15+Pro',
-          'https://via.placeholder.com/300x300/007AFF/FFFFFF?text=iPhone+15+Pro+2',
+          'assets/images/products/iphone.svg',
+          'assets/images/products/iphone.svg',
         ],
         specifications: {
           'Display': '6.1-inch Super Retina XDR',
@@ -165,7 +162,7 @@ class ProductProvider with ChangeNotifier {
         name: 'MacBook Air M3',
         description: 'Supercharged by the M3 chip. Up to 18 hours of battery life.',
         price: 1099.99,
-        imageUrl: 'https://via.placeholder.com/300x300/000000/FFFFFF?text=MacBook+Air+M3',
+        imageUrl: 'assets/images/products/macbook.svg',
         category: 'Electronics',
         rating: 4.9,
         reviewCount: 189,
@@ -183,7 +180,7 @@ class ProductProvider with ChangeNotifier {
         name: 'Nike Air Max',
         description: 'Classic running shoes with responsive cushioning and iconic style.',
         price: 129.99,
-        imageUrl: 'https://via.placeholder.com/300x300/FF6B35/FFFFFF?text=Nike+Air+Max',
+        imageUrl: 'assets/images/products/nike-shoes.svg',
         category: 'Sports & Outdoors',
         rating: 4.5,
         reviewCount: 892,
@@ -201,7 +198,7 @@ class ProductProvider with ChangeNotifier {
         name: 'Sony WH-1000XM5',
         description: 'Industry-leading noise canceling with premium sound quality.',
         price: 349.99,
-        imageUrl: 'https://via.placeholder.com/300x300/000000/FFFFFF?text=Sony+WH-1000XM5',
+        imageUrl: 'assets/images/products/sony-headphones.svg',
         category: 'Electronics',
         rating: 4.7,
         reviewCount: 456,
@@ -216,86 +213,49 @@ class ProductProvider with ChangeNotifier {
       ),
       Product(
         id: '5',
-        name: 'Levi\'s 501 Jeans',
-        description: 'The original blue jean since 1873. Timeless style and comfort.',
+        name: 'Adidas T-Shirt',
+        description: 'Sports t-shirt in organic cotton.',
         price: 79.99,
-        imageUrl: 'https://via.placeholder.com/300x300/4169E1/FFFFFF?text=Levi%27s+501',
+        imageUrl: 'assets/images/products/adidas-tshirt.svg',
         category: 'Clothing',
         rating: 4.3,
         reviewCount: 1243,
         isInStock: true,
         stockQuantity: 200,
         specifications: {
-          'Fit': 'Straight',
+          'Fit': 'Regular',
           'Material': '100% Cotton',
-          'Rise': 'Mid',
+          'Style': 'Sports',
           'Care': 'Machine wash',
         },
       ),
       Product(
         id: '6',
-        name: 'Instant Pot Duo',
+        name: 'Samsung Galaxy S24',
         description: '7-in-1 electric pressure cooker for fast, easy cooking.',
         price: 89.99,
-        imageUrl: 'https://via.placeholder.com/300x300/8B4513/FFFFFF?text=Instant+Pot+Duo',
-        category: 'Home & Kitchen',
+        imageUrl: 'assets/images/products/samsung.svg',
+        category: 'Electronics',
         rating: 4.6,
         reviewCount: 2156,
         isInStock: true,
         stockQuantity: 60,
         specifications: {
-          'Capacity': '6 Quart',
-          'Functions': 'Pressure Cooker, Slow Cooker, Rice Cooker, Steamer, Sauté, Yogurt Maker, Warmer',
-          'Material': 'Stainless Steel',
-          'Power': '1200W',
-        },
-      ),
-      Product(
-        id: '7',
-        name: 'Adidas Ultraboost',
-        description: 'Responsive running shoes with energy-returning cushioning.',
-        price: 189.99,
-        imageUrl: 'https://via.placeholder.com/300x300/000000/FFFFFF?text=Adidas+Ultraboost',
-        category: 'Sports & Outdoors',
-        rating: 4.4,
-        reviewCount: 678,
-        isInStock: true,
-        stockQuantity: 85,
-        specifications: {
-          'Technology': 'Boost midsole',
-          'Weight': '310g',
-          'Drop': '10mm',
-          'Use': 'Running/Training',
-        },
-      ),
-      Product(
-        id: '8',
-        name: 'Dyson V15 Detect',
-        description: 'Powerful cordless vacuum with laser dust detection.',
-        price: 749.99,
-        imageUrl: 'https://via.placeholder.com/300x300/FF0000/FFFFFF?text=Dyson+V15',
-        category: 'Home & Kitchen',
-        rating: 4.8,
-        reviewCount: 342,
-        isInStock: true,
-        stockQuantity: 25,
-        specifications: {
-          'Battery': '60 minutes',
-          'Filtration': 'Whole-machine HEPA',
-          'Weight': '3.1kg',
-          'Tools': 'Fluffy head, laser slim flange head',
+          'Display': '6.2-inch Dynamic AMOLED',
+          'Storage': '128GB',
+          'Camera': '50MP Main, 12MP Ultra Wide',
+          'Battery': '4000mAh',
         },
       ),
     ];
 
+    _products.clear();
     _products.addAll(sampleProducts);
 
     // Extract unique categories
-    final categorySet = <String>{};
-    for (final product in _products) {
-      categorySet.add(product.category);
-    }
-    _categories.addAll(['All', ...categorySet.toList()..sort()]);
+    _categories.clear();
+    _categories.add('All');
+    _categories.addAll(sampleProducts.map((p) => p.category).toSet().toList());
 
     notifyListeners();
   }
