@@ -202,21 +202,23 @@ class ProductCard extends StatelessWidget {
             // Product info
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // Product name
                     Text(
                       product.name,
-                      style: theme.textTheme.titleLarge?.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         color: const Color(0xFF1F2937),
                         fontWeight: FontWeight.w600,
+                        fontSize: 14,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
 
                     // Rating
                     Row(
@@ -227,7 +229,7 @@ class ProductCard extends StatelessWidget {
                           direction: Axis.horizontal,
                           allowHalfRating: true,
                           itemCount: 5,
-                          itemSize: 14,
+                          itemSize: 12,
                           ignoreGestures: true,
                           itemBuilder: (context, _) => const Icon(
                             Icons.star_rounded,
@@ -235,17 +237,18 @@ class ProductCard extends StatelessWidget {
                           ),
                           onRatingUpdate: (rating) {},
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 4),
                         Text(
                           '(${product.reviewCount})',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: const Color(0xFF6B7280),
                             fontWeight: FontWeight.w500,
+                            fontSize: 11,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
 
                     // Price and Add to Cart
                     Row(
@@ -256,32 +259,36 @@ class ProductCard extends StatelessWidget {
                             children: [
                               Text(
                                 '\$${product.price.toStringAsFixed(2)}',
-                                style: theme.textTheme.headlineSmall?.copyWith(
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: const Color(0xFF6366F1),
+                                  fontSize: 16,
                                 ),
                               ),
                             ],
                           ),
                         ),
                         Container(
+                          width: 36,
+                          height: 36,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: isInCart 
+                              colors: isInCart
                                 ? [Colors.red.shade400, Colors.red.shade600]
                                 : [const Color(0xFF6366F1), const Color(0xFF4F46E5)],
                             ),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(8),
                             boxShadow: [
                               BoxShadow(
                                 color: (isInCart ? Colors.red : const Color(0xFF6366F1)).withOpacity(0.3),
-                                blurRadius: 8,
+                                blurRadius: 6,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
                           child: MicroInteractions.animatedIconButton(
                             icon: isInCart ? Icons.remove_shopping_cart : Icons.add_shopping_cart,
+                            size: 18,
                             onPressed: () {
                               if (isInCart) {
                                 cartProvider.removeItem(product.id);

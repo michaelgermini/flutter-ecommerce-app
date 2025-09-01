@@ -193,6 +193,25 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class SimpleHomeScreen extends StatelessWidget {
+  const SimpleHomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('E-Commerce App'),
+      ),
+      body: const Center(
+        child: Text(
+          'Application chargée avec succès !',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+}
+
 class AppInitializer extends StatefulWidget {
   const AppInitializer({super.key});
 
@@ -204,9 +223,16 @@ class _AppInitializerState extends State<AppInitializer> {
   @override
   void initState() {
     super.initState();
-    // Load sample data
+    // Load sample data with proper error handling
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProductProvider>().loadSampleProducts();
+      if (mounted) {
+        try {
+          context.read<ProductProvider>().loadSampleProducts();
+        } catch (e) {
+          // Handle any initialization errors gracefully
+          debugPrint('Error initializing app: $e');
+        }
+      }
     });
   }
 

@@ -25,7 +25,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     final productProvider = context.watch<ProductProvider>();
-    final filteredProducts = productProvider.filteredProducts;
+    final filteredProducts = productProvider.products;
     final theme = Theme.of(context);
 
     return Scaffold(

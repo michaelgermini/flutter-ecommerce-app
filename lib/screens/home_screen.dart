@@ -7,23 +7,42 @@ import '../widgets/category_chips.dart';
 import '../widgets/micro_interactions.dart';
 import '../widgets/hero_section.dart';
 import '../widgets/modern_header.dart';
+import '../widgets/loading_states.dart';
+import '../widgets/footer.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load products when screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProductProvider>().loadSampleProducts();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final productProvider = context.watch<ProductProvider>();
     final appProvider = context.watch<AppProvider>();
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600;
 
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
-      body: CustomScrollView(
+      body: SafeArea(
+        child: CustomScrollView(
         slivers: [
           // Modern header
           SliverAppBar(
-            expandedHeight: 120,
+            expandedHeight: 90,
             floating: false,
             pinned: true,
             backgroundColor: Colors.transparent,
@@ -63,18 +82,21 @@ class HomeScreen extends StatelessWidget {
 
           // Hero section
           SliverToBoxAdapter(
-            child: HeroSection(
-              title: 'Discover Amazing Products',
-              subtitle: 'Shop the latest trends with our curated collection of premium products',
-              buttonText: 'Explore Now',
-              onButtonPressed: () => appProvider.navigateToProducts(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: HeroSection(
+                title: 'Discover Amazing Products',
+                subtitle: 'Shop the latest trends with our curated collection of premium products',
+                buttonText: 'Explore Now',
+                onButtonPressed: () => appProvider.navigateToProducts(),
+              ),
             ),
           ),
 
           // Categories section
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -141,7 +163,7 @@ class HomeScreen extends StatelessWidget {
           // Features section
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -181,7 +203,7 @@ class HomeScreen extends StatelessWidget {
           // Featured Products
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -212,97 +234,140 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
+          // Products Grid with Loading States
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final products = productProvider.getFeaturedProducts();
-                  if (index >= products.length) return null;
-
-                  return ProductCard(
-                    product: products[index],
-                    onTap: () {
-                      // TODO: Navigate to product details
-                    },
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            sliver: Builder(
+              builder: (context) {
+                if (productProvider.isLoading) {
+                  return SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: isSmallScreen ? 2 : 3,
+                      childAspectRatio: isSmallScreen ? 1.2 : 1.0,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => LoadingStates.productSkeleton(),
+                      childCount: isSmallScreen ? 4 : 6, // Adapt count based on screen size
+                    ),
                   );
-                },
-                childCount: productProvider.getFeaturedProducts().length,
-              ),
+                }
+
+                if (productProvider.hasError) {
+                  return SliverToBoxAdapter(
+                    child: LoadingStates.errorState(
+                      message: 'Failed to load products',
+                      subMessage: productProvider.errorMessage ?? 'Please check your connection and try again.',
+                      onRetry: () => productProvider.refreshProducts(),
+                    ),
+                  );
+                }
+
+                if (productProvider.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: LoadingStates.emptyState(
+                      message: 'No products found',
+                      subMessage: 'We\'re working on adding new products.',
+                      icon: Icons.inventory_2_outlined,
+                    ),
+                  );
+                }
+
+                final products = productProvider.getFeaturedProducts();
+                return SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: isSmallScreen ? 2 : 3,
+                    childAspectRatio: isSmallScreen ? 1.2 : 1.0,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      if (index >= products.length) return null;
+                      return ProductCard(
+                        product: products[index],
+                        onTap: () {
+                          // TODO: Navigate to product details
+                        },
+                      );
+                    },
+                    childCount: products.length,
+                  ),
+                );
+              },
             ),
           ),
 
-          // New Arrivals
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'New Arrivals',
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          color: const Color(0xFF1F2937),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => appProvider.navigateToProducts(),
-                        child: Text(
-                          'View All',
-                          style: TextStyle(
-                            color: const Color(0xFF6366F1),
-                            fontWeight: FontWeight.w600,
+          // New Arrivals (only show if not loading or error)
+          if (!productProvider.isLoading && !productProvider.hasError && !productProvider.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'New Arrivals',
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            color: const Color(0xFF1F2937),
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        TextButton(
+                          onPressed: () => appProvider.navigateToProducts(),
+                          child: Text(
+                            'View All',
+                            style: TextStyle(
+                              color: const Color(0xFF6366F1),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final products = productProvider.getNewArrivals();
-                  if (index >= products.length) return null;
+          // New Arrivals Grid
+          if (!productProvider.isLoading && !productProvider.hasError && !productProvider.isEmpty)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: isSmallScreen ? 2 : 3,
+                  childAspectRatio: isSmallScreen ? 1.2 : 1.0,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final products = productProvider.getNewArrivals();
+                    if (index >= products.length) return null;
 
-                  return ProductCard(
-                    product: products[index],
-                    onTap: () {
-                      // TODO: Navigate to product details
-                    },
-                  );
-                },
-                childCount: productProvider.getNewArrivals().length,
+                    return ProductCard(
+                      product: products[index],
+                      onTap: () {
+                        // TODO: Navigate to product details
+                      },
+                    );
+                  },
+                  childCount: productProvider.getNewArrivals().length,
+                ),
               ),
             ),
-          ),
 
-          // Bottom padding
+          // Footer
           const SliverToBoxAdapter(
-            child: SizedBox(height: 100),
+            child: Footer(),
           ),
         ],
+        ),
       ),
     );
   }
