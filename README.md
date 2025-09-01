@@ -157,8 +157,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Issues**: [GitHub Issues](https://github.com/michaelgermini/flutter-ecommerce-app/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/michaelgermini/flutter-ecommerce-app/discussions)
-- **Email**: your.email@example.com
-- **Twitter**: [@yourusername](https://twitter.com/yourusername)
+- **Email**: michael@germini.info
 
 ---
 
