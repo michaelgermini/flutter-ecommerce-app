@@ -1,0 +1,9 @@
+# Images Placeholder
+
+For a real app, you can add your images here:
+- App logo
+- Product images
+- Custom icons
+- Promotional banners
+
+Supported formats: PNG, JPG, SVG, WebP

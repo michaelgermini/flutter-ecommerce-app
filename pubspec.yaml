@@ -1,0 +1,38 @@
+name: flutter_ecommerce_app
+description: A modern, responsive e-commerce application built with Flutter and adaptive design principles. Features smooth animations, micro-interactions, and a beautiful user interface.
+publish_to: 'none'
+version: 1.0.0+1
+
+# Repository information
+repository: https://github.com/michaelgermini/flutter-ecommerce-app
+homepage: https://github.com/michaelgermini/flutter-ecommerce-app
+issue_tracker: https://github.com/michaelgermini/flutter-ecommerce-app/issues
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_adaptive_scaffold: ^0.1.7+1
+  provider: ^6.0.5
+  cupertino_icons: ^1.0.2
+  intl: ^0.19.0
+  flutter_rating_bar: ^4.0.1
+  cached_network_image: ^3.3.0
+  flutter_staggered_grid_view: ^0.7.0
+  badges: ^3.1.2
+  flutter_svg: ^2.0.9
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/images/products/
+    - assets/images/banners/
