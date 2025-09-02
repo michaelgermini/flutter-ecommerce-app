@@ -251,8 +251,12 @@ class CartScreen extends StatelessWidget {
         price: 1199.99,
         imageUrl: 'assets/images/products/iphone.svg',
         category: 'Electronics',
+        brand: 'Apple',
         rating: 4.8,
         reviewCount: 1247,
+        isInStock: true,
+        onSale: false,
+        stockQuantity: 50,
       ),
       Product(
         id: '3',
@@ -261,8 +265,12 @@ class CartScreen extends StatelessWidget {
         price: 129.99,
         imageUrl: 'assets/images/products/nike-shoes.svg',
         category: 'Fashion',
+        brand: 'Nike',
         rating: 4.6,
         reviewCount: 567,
+        isInStock: true,
+        onSale: true,
+        stockQuantity: 25,
       ),
       Product(
         id: '5',
@@ -271,8 +279,12 @@ class CartScreen extends StatelessWidget {
         price: 29.99,
         imageUrl: 'assets/images/products/adidas-tshirt.svg',
         category: 'Fashion',
+        brand: 'Adidas',
         rating: 4.5,
         reviewCount: 234,
+        isInStock: true,
+        onSale: false,
+        stockQuantity: 100,
       ),
     ];
 

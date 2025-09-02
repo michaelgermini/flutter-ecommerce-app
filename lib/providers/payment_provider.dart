@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../models/payment.dart';
 import '../models/product.dart';
-import '../models/cart.dart';
+import '../models/cart_item.dart';
 import '../services/notification_service.dart';
 import '../providers/loyalty_provider.dart';
 

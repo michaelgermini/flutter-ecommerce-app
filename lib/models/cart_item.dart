@@ -10,6 +10,7 @@ class CartItem {
   });
 
   double get totalPrice => product.price * quantity;
+  double get total => totalPrice;
 
   CartItem copyWith({
     Product? product,

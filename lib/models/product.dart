@@ -5,9 +5,11 @@ class Product {
   final double price;
   final String imageUrl;
   final String category;
+  final String brand;
   final double rating;
   final int reviewCount;
   final bool isInStock;
+  final bool onSale;
   final int stockQuantity;
   final List<String> images;
   final Map<String, String> specifications;
@@ -19,9 +21,11 @@ class Product {
     required this.price,
     required this.imageUrl,
     required this.category,
+    this.brand = '',
     this.rating = 0.0,
     this.reviewCount = 0,
     this.isInStock = true,
+    this.onSale = false,
     this.stockQuantity = 0,
     this.images = const [],
     this.specifications = const {},
@@ -35,9 +39,11 @@ class Product {
       price: (json['price'] as num).toDouble(),
       imageUrl: json['imageUrl'] as String,
       category: json['category'] as String,
+      brand: json['brand'] as String? ?? '',
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount: json['reviewCount'] as int? ?? 0,
       isInStock: json['isInStock'] as bool? ?? true,
+      onSale: json['onSale'] as bool? ?? false,
       stockQuantity: json['stockQuantity'] as int? ?? 0,
       images: List<String>.from(json['images'] ?? []),
       specifications: Map<String, String>.from(json['specifications'] ?? {}),
@@ -52,9 +58,11 @@ class Product {
       'price': price,
       'imageUrl': imageUrl,
       'category': category,
+      'brand': brand,
       'rating': rating,
       'reviewCount': reviewCount,
       'isInStock': isInStock,
+      'onSale': onSale,
       'stockQuantity': stockQuantity,
       'images': images,
       'specifications': specifications,

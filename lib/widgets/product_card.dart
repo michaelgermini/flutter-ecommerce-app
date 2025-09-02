@@ -442,6 +442,5 @@ class ProductCard extends StatelessWidget {
         ),
       ),
     );
-    );
   }
 }

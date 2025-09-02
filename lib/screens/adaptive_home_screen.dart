@@ -95,6 +95,24 @@ class AdaptiveHomeScreen extends StatelessWidget {
         return 4;
       case AppPage.wishlist:
         return 5;
+      case AppPage.search:
+        return 6;
+      case AppPage.notifications:
+        return 7;
+      case AppPage.recentlyViewed:
+        return 8;
+      case AppPage.comparison:
+        return 9;
+      case AppPage.loyalty:
+        return 10;
+      case AppPage.recommendations:
+        return 11;
+      case AppPage.accessibility:
+        return 12;
+      case AppPage.help:
+        return 13;
+      case AppPage.settings:
+        return 14;
     }
   }
 

@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'dart:ui';
+
 enum NotificationType {
   success,
   error,
@@ -30,7 +33,7 @@ class AppNotification {
   final VoidCallback? actionCallback;
   final Map<String, dynamic>? data;
 
-  const AppNotification({
+  AppNotification({
     required this.id,
     required this.title,
     required this.message,

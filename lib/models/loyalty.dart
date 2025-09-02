@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 enum LoyaltyTier {
   bronze,
   silver,
@@ -341,13 +343,13 @@ class RewardRedemption {
   Color get statusColor {
     switch (status) {
       case RedemptionStatus.pending:
-        return Colors.orange;
+        return const Color(0xFFFF9800);
       case RedemptionStatus.approved:
-        return Colors.blue;
+        return const Color(0xFF2196F3);
       case RedemptionStatus.fulfilled:
-        return Colors.green;
+        return const Color(0xFF4CAF50);
       case RedemptionStatus.cancelled:
-        return Colors.red;
+        return const Color(0xFFF44336);
     }
   }
 }

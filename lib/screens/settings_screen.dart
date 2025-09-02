@@ -103,7 +103,7 @@ class SettingsScreen extends StatelessWidget {
             _buildSettingCard(
               context,
               'Currency',
-              'USD ($)',
+              'USD (\$)',
               const Icon(Icons.attach_money),
             ),
 

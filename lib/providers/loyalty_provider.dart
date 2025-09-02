@@ -9,12 +9,12 @@ class LoyaltyProvider with ChangeNotifier {
   static const String _redemptionsKey = 'reward_redemptions';
   static const int _maxTransactions = 100;
 
-  LoyaltyPoints _loyaltyPoints = const LoyaltyPoints(
+  LoyaltyPoints _loyaltyPoints = LoyaltyPoints(
     currentPoints: 0,
     lifetimePoints: 0,
     currentTier: LoyaltyTier.bronze,
     pointsToNextTier: 1000,
-    lastUpdated: null,
+    lastUpdated: DateTime.now(),
   );
 
   List<PointTransaction> _transactions = [];
@@ -41,8 +41,9 @@ class LoyaltyProvider with ChangeNotifier {
   List<PointTransaction> getRecentTransactions({int limit = 10}) =>
       _transactions.take(limit).toList();
 
-  List<RewardRedemption> getPendingRedemptions =>
-      _redemptions.where((r) => r.status == RedemptionStatus.pending).toList();
+  List<RewardRedemption> getPendingRedemptions() {
+    return _redemptions.where((r) => r.status == RedemptionStatus.pending).toList();
+  }
 
   LoyaltyProvider() {
     _loadLoyaltyData();
@@ -352,12 +353,12 @@ class LoyaltyProvider with ChangeNotifier {
 
   // Reset method (for testing/demo purposes)
   void resetLoyaltyData() {
-    _loyaltyPoints = const LoyaltyPoints(
+    _loyaltyPoints = LoyaltyPoints(
       currentPoints: 0,
       lifetimePoints: 0,
       currentTier: LoyaltyTier.bronze,
       pointsToNextTier: 1000,
-      lastUpdated: null,
+      lastUpdated: DateTime.now(),
     );
     _transactions.clear();
     _redemptions.clear();

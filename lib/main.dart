@@ -46,7 +46,12 @@ class MyApp extends StatelessWidget {
             wishlistProvider: context.read<WishlistProvider>(),
             cartProvider: context.read<CartProvider>(),
           ),
-          update: (context, productProvider, recentlyViewedProvider, wishlistProvider, cartProvider, loyaltyProvider, recommendationProvider) => recommendationProvider,
+          update: (context, productProvider, recentlyViewedProvider, wishlistProvider, cartProvider, loyaltyProvider, recommendationProvider) => recommendationProvider ?? RecommendationProvider(
+            productProvider: productProvider,
+            recentlyViewedProvider: recentlyViewedProvider,
+            wishlistProvider: wishlistProvider,
+            cartProvider: cartProvider,
+          ),
         ),
         ChangeNotifierProvider(create: (_) => AccessibilityProvider()),
       ],
