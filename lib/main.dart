@@ -39,14 +39,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProductComparisonProvider()),
         ChangeNotifierProvider(create: (_) => LoyaltyProvider()),
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
-        ChangeNotifierProxyProvider5<ProductProvider, RecentlyViewedProvider, WishlistProvider, CartProvider, LoyaltyProvider, RecommendationProvider>(
+        ChangeNotifierProxyProvider4<ProductProvider, RecentlyViewedProvider, WishlistProvider, CartProvider, RecommendationProvider>(
           create: (context) => RecommendationProvider(
             productProvider: context.read<ProductProvider>(),
             recentlyViewedProvider: context.read<RecentlyViewedProvider>(),
             wishlistProvider: context.read<WishlistProvider>(),
             cartProvider: context.read<CartProvider>(),
           ),
-          update: (context, productProvider, recentlyViewedProvider, wishlistProvider, cartProvider, loyaltyProvider, recommendationProvider) => recommendationProvider ?? RecommendationProvider(
+          update: (context, productProvider, recentlyViewedProvider, wishlistProvider, cartProvider, recommendationProvider) => recommendationProvider ?? RecommendationProvider(
             productProvider: productProvider,
             recentlyViewedProvider: recentlyViewedProvider,
             wishlistProvider: wishlistProvider,

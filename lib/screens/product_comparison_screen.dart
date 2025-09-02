@@ -417,7 +417,7 @@ class _ProductComparisonScreenState extends State<ProductComparisonScreen>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '(${product.reviews})',
+                      '(${product.reviewCount})',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withOpacity(0.6),
                       ),

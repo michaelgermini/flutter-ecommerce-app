@@ -254,7 +254,7 @@ class PaymentProvider with ChangeNotifier {
       await Future.delayed(const Duration(seconds: 1));
 
       // Award loyalty points
-      final loyaltyProvider = Provider.of<LoyaltyProvider>(context, listen: false);
+      final loyaltyProvider = context.read<LoyaltyProvider>();
       loyaltyProvider.earnPurchasePoints(total, orderId: orderId);
 
       _orders.add(order);
