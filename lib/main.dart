@@ -3,9 +3,21 @@ import 'package:provider/provider.dart';
 import 'providers/app_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/product_provider.dart';
+import 'providers/wishlist_provider.dart';
+import 'providers/theme_provider.dart';
+import 'providers/search_provider.dart';
+import 'providers/notification_provider.dart';
+import 'providers/recently_viewed_provider.dart';
+import 'providers/product_comparison_provider.dart';
+import 'providers/loyalty_provider.dart';
+import 'providers/payment_provider.dart';
+import 'providers/recommendation_provider.dart';
+import 'providers/accessibility_provider.dart';
 import 'screens/adaptive_home_screen.dart';
+import 'widgets/keyboard_shortcut_handler.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -19,175 +31,36 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
-      ],
-      child: MaterialApp(
-        title: 'E-Commerce Shop',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF6366F1),
-            brightness: Brightness.light,
-            primary: const Color(0xFF6366F1),
-            secondary: const Color(0xFFEC4899),
-            tertiary: const Color(0xFF10B981),
-            surface: const Color(0xFFFAFAFA),
-            background: const Color(0xFFFFFFFF),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => SearchProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => RecentlyViewedProvider()),
+        ChangeNotifierProvider(create: (_) => ProductComparisonProvider()),
+        ChangeNotifierProvider(create: (_) => LoyaltyProvider()),
+        ChangeNotifierProvider(create: (_) => PaymentProvider()),
+        ChangeNotifierProxyProvider5<ProductProvider, RecentlyViewedProvider, WishlistProvider, CartProvider, LoyaltyProvider, RecommendationProvider>(
+          create: (context) => RecommendationProvider(
+            productProvider: context.read<ProductProvider>(),
+            recentlyViewedProvider: context.read<RecentlyViewedProvider>(),
+            wishlistProvider: context.read<WishlistProvider>(),
+            cartProvider: context.read<CartProvider>(),
           ),
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          fontFamily: 'Inter',
-          textTheme: const TextTheme(
-            displayLarge: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.5,
-            ),
-            displayMedium: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.25,
-            ),
-            displaySmall: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-            ),
-            headlineLarge: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-            ),
-            headlineMedium: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-            headlineSmall: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-            titleLarge: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-            titleMedium: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            titleSmall: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-            bodyLarge: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.normal,
-            ),
-            bodyMedium: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.normal,
-            ),
-            bodySmall: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.normal,
-            ),
-            labelLarge: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            labelMedium: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-            labelSmall: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          appBarTheme: const AppBarTheme(
-            elevation: 0,
-            centerTitle: true,
-            backgroundColor: Colors.transparent,
-            foregroundColor: Color(0xFF1F2937),
-            titleTextStyle: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1F2937),
-            ),
-          ),
-          cardTheme: CardTheme(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            color: Colors.white,
-            shadowColor: const Color(0xFF1F2937).withOpacity(0.1),
-            surfaceTintColor: Colors.transparent,
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              backgroundColor: const Color(0xFF6366F1),
-              foregroundColor: Colors.white,
-              textStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          outlinedButtonTheme: OutlinedButtonThemeData(
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              side: const BorderSide(color: Color(0xFF6366F1), width: 1.5),
-              foregroundColor: const Color(0xFF6366F1),
-              textStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            fillColor: const Color(0xFFF9FAFB),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            hintStyle: TextStyle(
-              color: const Color(0xFF6B7280),
-              fontSize: 16,
-            ),
-          ),
-          chipTheme: ChipThemeData(
-            backgroundColor: const Color(0xFFF3F4F6),
-            selectedColor: const Color(0xFF6366F1),
-            labelStyle: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-          dividerTheme: const DividerThemeData(
-            color: Color(0xFFE5E7EB),
-            thickness: 1,
-            space: 1,
-          ),
+          update: (context, productProvider, recentlyViewedProvider, wishlistProvider, cartProvider, loyaltyProvider, recommendationProvider) => recommendationProvider,
         ),
-        home: const AppInitializer(),
-        debugShowCheckedModeBanner: false,
+        ChangeNotifierProvider(create: (_) => AccessibilityProvider()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return KeyboardShortcutHandler(
+            child: MaterialApp(
+              title: 'E-Commerce Shop',
+              theme: themeProvider.currentTheme,
+              home: const AppInitializer(),
+              debugShowCheckedModeBanner: false,
+            ),
+          );
+        },
       ),
     );
   }
@@ -223,11 +96,24 @@ class _AppInitializerState extends State<AppInitializer> {
   @override
   void initState() {
     super.initState();
-    // Load sample data with proper error handling
+    // Load sample data and wishlist with proper error handling
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         try {
-          context.read<ProductProvider>().loadSampleProducts();
+          final productProvider = context.read<ProductProvider>();
+          final searchProvider = context.read<SearchProvider>();
+          final wishlistProvider = context.read<WishlistProvider>();
+
+          productProvider.loadSampleProducts();
+
+          // Wait for products to load, then set them in search provider
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (mounted) {
+              searchProvider.setProducts(productProvider.products);
+            }
+          });
+
+          wishlistProvider.loadWishlistFromStorage();
         } catch (e) {
           // Handle any initialization errors gracefully
           debugPrint('Error initializing app: $e');

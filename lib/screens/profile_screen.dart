@@ -229,10 +229,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Stack(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
-                child: Icon(Icons.person, size: 50, color: Colors.white70),
+                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                child: Icon(Icons.person, size: 50, color: theme.colorScheme.primary),
               ),
               if (_isEditing)
                 Positioned(

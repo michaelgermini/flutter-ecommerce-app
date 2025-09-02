@@ -66,10 +66,10 @@ class _OrdersScreenState extends State<OrdersScreen> with TickerProviderStateMix
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildOrdersList(context, 'all'),
-                  _buildOrdersList(context, 'processing'),
-                  _buildOrdersList(context, 'shipped'),
-                  _buildOrdersList(context, 'delivered'),
+                  _buildOrdersListView(context, 'all'),
+                  _buildOrdersListView(context, 'processing'),
+                  _buildOrdersListView(context, 'shipped'),
+                  _buildOrdersListView(context, 'delivered'),
                 ],
               ),
             ),
@@ -79,33 +79,30 @@ class _OrdersScreenState extends State<OrdersScreen> with TickerProviderStateMix
     );
   }
 
-  Widget _buildOrdersList(BuildContext context, String filter) {
+  Widget _buildOrdersListView(BuildContext context, String filter) {
     final theme = Theme.of(context);
 
     // Mock data for demonstration - in real app this would come from a provider
     final mockOrders = _getMockOrders();
 
     if (mockOrders.isEmpty) {
-      return SliverToBoxAdapter(
-        child: Container(
-          height: 400,
-          padding: const EdgeInsets.all(16),
-          child: _buildEmptyState(context),
-        ),
+      return Container(
+        height: 400,
+        padding: const EdgeInsets.all(16),
+        child: _buildEmptyState(context),
       );
     }
 
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final order = mockOrders[index];
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: _buildOrderCard(context, order),
-          );
-        },
-        childCount: mockOrders.length,
-      ),
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: mockOrders.length,
+      itemBuilder: (context, index) {
+        final order = mockOrders[index];
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: _buildOrderCard(context, order),
+        );
+      },
     );
   }
 

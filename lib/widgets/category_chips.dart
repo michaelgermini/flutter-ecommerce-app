@@ -14,10 +14,12 @@ class CategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: categories.length,
+    return SizedBox(
+      height: 50, // Fixed height to prevent unbounded height error
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
         final isSelected = category == selectedCategory;
@@ -51,6 +53,7 @@ class CategoryChips extends StatelessWidget {
           ),
         );
       },
+      ),
     );
   }
 }

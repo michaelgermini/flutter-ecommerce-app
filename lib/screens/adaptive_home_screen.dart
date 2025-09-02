@@ -3,12 +3,25 @@ import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/wishlist_provider.dart';
+import '../providers/theme_provider.dart';
 import '../widgets/micro_interactions.dart';
+import '../widgets/enhanced_app_bar.dart';
 import 'home_screen.dart';
 import 'products_screen.dart';
 import 'cart_screen.dart';
 import 'profile_screen.dart';
 import 'orders_screen.dart';
+import 'wishlist_screen.dart';
+import 'help_screen.dart';
+import 'settings_screen.dart';
+import 'advanced_search_screen.dart';
+import 'notification_center_screen.dart';
+import 'recently_viewed_screen.dart';
+import 'product_comparison_screen.dart';
+import 'loyalty_screen.dart';
+import 'recommendations_screen.dart';
+import 'accessibility_screen.dart';
 
 class AdaptiveHomeScreen extends StatelessWidget {
   const AdaptiveHomeScreen({super.key});
@@ -18,44 +31,8 @@ class AdaptiveHomeScreen extends StatelessWidget {
     final appProvider = context.watch<AppProvider>();
 
     return AdaptiveScaffold(
-      // App Bar - adapts to screen size  
-      appBar: AppBar(
-        title: const Text('E-Commerce Shop'),
-        actions: [
-          // Cart icon with badge
-          Consumer<CartProvider>(
-            builder: (context, cartProvider, child) {
-              return Stack(
-                children: [
-                  MicroInteractions.animatedIconButton(
-                    icon: Icons.shopping_cart,
-                    onPressed: () {
-                      appProvider.navigateToCart();
-                    },
-                  ),
-                  if (cartProvider.itemCount > 0)
-                    Positioned(
-                      right: 8,
-                      top: 8,
-                      child: MicroInteractions.animatedCounter(
-                        count: cartProvider.itemCount,
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-          MicroInteractions.animatedIconButton(
-            icon: Icons.search,
-            onPressed: () {
-              appProvider.navigateToProducts();
-            },
-          ),
-        ],
-      ),
+      // Enhanced App Bar with modern design
+      appBar: const EnhancedAppBar(),
 
       // Navigation destinations
       destinations: _getDestinations(),
@@ -96,6 +73,11 @@ class AdaptiveHomeScreen extends StatelessWidget {
         selectedIcon: Icon(Icons.person),
         label: 'Profile',
       ),
+      NavigationDestination(
+        icon: Icon(Icons.favorite_border),
+        selectedIcon: Icon(Icons.favorite),
+        label: 'Wishlist',
+      ),
     ];
   }
 
@@ -111,6 +93,8 @@ class AdaptiveHomeScreen extends StatelessWidget {
         return 3;
       case AppPage.profile:
         return 4;
+      case AppPage.wishlist:
+        return 5;
     }
   }
 
@@ -126,6 +110,8 @@ class AdaptiveHomeScreen extends StatelessWidget {
         return AppPage.orders;
       case 4:
         return AppPage.profile;
+      case 5:
+        return AppPage.wishlist;
       default:
         return AppPage.home;
     }
@@ -143,6 +129,26 @@ class AdaptiveHomeScreen extends StatelessWidget {
         return const OrdersScreen();
       case AppPage.profile:
         return const ProfileScreen();
+      case AppPage.wishlist:
+        return const WishlistScreen();
+      case AppPage.search:
+        return const AdvancedSearchScreen();
+      case AppPage.notifications:
+        return const NotificationCenterScreen();
+      case AppPage.recentlyViewed:
+        return const RecentlyViewedScreen();
+      case AppPage.comparison:
+        return const ProductComparisonScreen();
+      case AppPage.loyalty:
+        return const LoyaltyScreen();
+      case AppPage.recommendations:
+        return const RecommendationsScreen();
+      case AppPage.accessibility:
+        return const AccessibilityScreen();
+      case AppPage.help:
+        return const HelpScreen();
+      case AppPage.settings:
+        return const SettingsScreen();
     }
   }
 }

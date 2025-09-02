@@ -5,8 +5,16 @@ import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/product.dart';
 import '../providers/cart_provider.dart';
+import '../providers/wishlist_provider.dart';
+import '../providers/notification_provider.dart';
+import '../providers/recently_viewed_provider.dart';
+import '../providers/product_comparison_provider.dart';
+import '../providers/accessibility_provider.dart';
 import '../screens/product_details_screen.dart';
 import '../screens/cart_screen.dart';
+import '../screens/wishlist_screen.dart';
+import '../screens/product_comparison_screen.dart';
+import '../services/notification_service.dart';
 import 'micro_interactions.dart';
 
 class ProductCard extends StatelessWidget {
@@ -22,19 +30,34 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartProvider = context.watch<CartProvider>();
+    final wishlistProvider = context.watch<WishlistProvider>();
+    final notificationProvider = context.read<NotificationProvider>();
+    final recentlyViewedProvider = context.read<RecentlyViewedProvider>();
+    final comparisonProvider = context.watch<ProductComparisonProvider>();
+    final notificationService = NotificationService();
+    final accessibilityProvider = context.watch<AccessibilityProvider>();
     final isInCart = cartProvider.isInCart(product.id);
+    final isInWishlist = wishlistProvider.isInWishlist(product.id);
+    final isInComparison = comparisonProvider.isInComparison(product.id);
     final theme = Theme.of(context);
 
-    return MicroInteractions.rippleContainer(
-      onTap: onTap ?? () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ProductDetailsScreen(product: product),
-          ),
-        );
-      },
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
+    return Semantics(
+      label: '${product.name}, ${product.price.toStringAsFixed(2)} dollars, ${product.category} category',
+      button: true,
+      enabled: true,
+      child: MicroInteractions.rippleContainer(
+        onTap: onTap ?? () {
+          // Add to recently viewed
+          recentlyViewedProvider.addToRecentlyViewed(product);
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ProductDetailsScreen(product: product),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.white,
@@ -196,6 +219,110 @@ class ProductCard extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                // Wishlist button
+                Positioned(
+                  top: 8,
+                  right: product.isInStock && product.stockQuantity >= 10 ? 8 : 70,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        final wasInWishlist = isInWishlist;
+                        wishlistProvider.toggleWishlist(product);
+
+                        if (!wasInWishlist) {
+                          // Item was added to wishlist
+                          notificationProvider.showWishlistNotification(product.name);
+                        } else {
+                          // Item was removed from wishlist
+                          notificationService.showInfo(
+                            context,
+                            'Removed from Wishlist',
+                            '${product.name} has been removed from your wishlist',
+                          );
+                        }
+                      },
+                      icon: Icon(
+                        isInWishlist ? Icons.favorite : Icons.favorite_border,
+                        color: isInWishlist ? Colors.red : Colors.grey[600],
+                        size: 20,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
+                      padding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+
+                // Compare button
+                Positioned(
+                  top: product.isInStock && product.stockQuantity >= 10 ? 52 : 94,
+                  right: product.isInStock && product.stockQuantity >= 10 ? 8 : 70,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        if (comparisonProvider.canAddMore) {
+                          final success = comparisonProvider.toggleComparison(product);
+                          if (success) {
+                            notificationService.showSuccess(
+                              context,
+                              'Added to Comparison',
+                              '${product.name} added to comparison',
+                            );
+                          } else {
+                            notificationService.showError(
+                              context,
+                              'Cannot Add',
+                              comparisonProvider.errorMessage,
+                            );
+                          }
+                        } else {
+                          // Show comparison screen if can't add more
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const ProductComparisonScreen(),
+                            ),
+                          );
+                        }
+                      },
+                      icon: Icon(
+                        isInComparison ? Icons.compare : Icons.compare_arrows,
+                        color: isInComparison ? theme.colorScheme.primary : Colors.grey[600],
+                        size: 20,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
+                      padding: EdgeInsets.zero,
+                      tooltip: isInComparison ? 'Remove from comparison' : 'Add to comparison',
+                    ),
+                  ),
+                ),
               ],
             ),
 
@@ -213,7 +340,7 @@ class ProductCard extends StatelessWidget {
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: const Color(0xFF1F2937),
                         fontWeight: FontWeight.w600,
-                        fontSize: 14,
+                        fontSize: 14 * accessibilityProvider.fontScale,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -262,7 +389,7 @@ class ProductCard extends StatelessWidget {
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: const Color(0xFF6366F1),
-                                  fontSize: 16,
+                                  fontSize: 16 * accessibilityProvider.fontScale,
                                 ),
                               ),
                             ],
@@ -292,41 +419,14 @@ class ProductCard extends StatelessWidget {
                             onPressed: () {
                               if (isInCart) {
                                 cartProvider.removeItem(product.id);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('${product.name} removed from cart'),
-                                    duration: const Duration(seconds: 2),
-                                    backgroundColor: Colors.red.shade600,
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
+                                notificationService.showError(
+                                  context,
+                                  'Removed from Cart',
+                                  '${product.name} has been removed from your cart',
                                 );
                               } else {
                                 cartProvider.addItem(product);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('${product.name} added to cart'),
-                                    duration: const Duration(seconds: 2),
-                                    backgroundColor: const Color(0xFF6366F1),
-                                    behavior: SnackBarBehavior.floating,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    action: SnackBarAction(
-                                      label: 'View Cart',
-                                      textColor: Colors.white,
-                                      onPressed: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) => const CartScreen(),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                );
+                                notificationProvider.showCartNotification(product.name);
                               }
                             },
                             color: Colors.white,
@@ -341,6 +441,7 @@ class ProductCard extends StatelessWidget {
           ],
         ),
       ),
+    );
     );
   }
 }

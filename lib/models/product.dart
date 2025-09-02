@@ -61,6 +61,55 @@ class Product {
     };
   }
 
+  // Sample reviews for demonstration
+  List<Map<String, dynamic>> get sampleReviews => [
+    {
+      'id': '1',
+      'userName': 'Sarah Johnson',
+      'userAvatar': null,
+      'rating': 5.0,
+      'date': '2024-01-15',
+      'title': 'Excellent quality and fast delivery!',
+      'comment': 'I\'m very satisfied with this product. The quality is outstanding and it arrived much faster than expected. The packaging was also very professional.',
+      'helpful': 12,
+      'verified': true,
+      'images': [],
+    },
+    {
+      'id': '2',
+      'userName': 'Mike Chen',
+      'userAvatar': null,
+      'rating': 4.0,
+      'date': '2024-01-10',
+      'title': 'Good product, minor issues',
+      'comment': 'Overall good product. Works as described. Only minor issue is that the setup took a bit longer than expected, but the manual was clear.',
+      'helpful': 8,
+      'verified': true,
+      'images': [],
+    },
+    {
+      'id': '3',
+      'userName': 'Emma Wilson',
+      'userAvatar': null,
+      'rating': 5.0,
+      'date': '2024-01-08',
+      'title': 'Perfect for my needs',
+      'comment': 'Exactly what I was looking for. Great build quality and the features are exactly as advertised. Highly recommend!',
+      'helpful': 15,
+      'verified': true,
+      'images': [],
+    },
+  ];
+
+  // Price history for the last 30 days
+  List<Map<String, dynamic>> get priceHistory => [
+    {'date': '2024-08-15', 'price': price * 1.1},
+    {'date': '2024-08-22', 'price': price * 1.05},
+    {'date': '2024-08-29', 'price': price * 0.95},
+    {'date': '2024-09-05', 'price': price * 0.98},
+    {'date': '2024-09-12', 'price': price},
+  ];
+
   Product copyWith({
     String? id,
     String? name,

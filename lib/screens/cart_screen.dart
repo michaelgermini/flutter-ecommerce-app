@@ -4,7 +4,7 @@ import '../providers/cart_provider.dart';
 import '../providers/app_provider.dart';
 import '../widgets/cart_item_widget.dart';
 import '../widgets/micro_interactions.dart';
-import 'checkout_screen.dart';
+import 'payment_screen.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -14,10 +14,18 @@ class CartScreen extends StatelessWidget {
     final cartProvider = context.watch<CartProvider>();
 
     if (cartProvider.isEmpty) {
-      return _buildEmptyCart(context);
+      return Scaffold(
+        body: _buildEmptyCart(context),
+      );
     }
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Shopping Cart (${cartProvider.itemCount})'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 0,
+      ),
       body: Column(
         children: [
           // Cart items list
@@ -110,7 +118,7 @@ class CartScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const CheckoutScreen(),
+                          builder: (context) => const PaymentScreen(),
                         ),
                       );
                     },
@@ -143,51 +151,141 @@ class CartScreen extends StatelessWidget {
   Widget _buildEmptyCart(BuildContext context) {
     final appProvider = context.watch<AppProvider>();
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.shopping_cart_outlined,
-            size: 80,
-            color: Colors.grey[400],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Your cart is empty',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.grey[600],
+    return Column(
+      children: [
+        AppBar(
+          title: const Text('Shopping Cart (0)'),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+        ),
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.shopping_cart_outlined,
+                  size: 80,
+                  color: Colors.grey[400],
                 ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Add some products to get started',
-            style: TextStyle(
-              color: Colors.grey[500],
+                const SizedBox(height: 16),
+                Text(
+                  'Your cart is empty',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Add some products to get started',
+                  style: TextStyle(
+                    color: Colors.grey[500],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    MicroInteractions.animatedButton(
+                      onPressed: () {
+                        _addDemoItemsToCart(context);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'Add Demo Items',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    MicroInteractions.animatedButton(
+                      onPressed: () {
+                        appProvider.navigateToProducts();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'Start Shopping',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 24),
-          MicroInteractions.animatedButton(
-            onPressed: () {
-              appProvider.navigateToProducts();
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                'Start Shopping',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
+      ],
+    );
+  }
+
+  void _addDemoItemsToCart(BuildContext context) {
+    final cartProvider = context.read<CartProvider>();
+
+    // Add some demo products to the cart
+    final demoProducts = [
+      Product(
+        id: '1',
+        name: 'iPhone 15 Pro',
+        description: 'The latest iPhone with A17 Pro chip and 48MP camera',
+        price: 1199.99,
+        imageUrl: 'assets/images/products/iphone.svg',
+        category: 'Electronics',
+        rating: 4.8,
+        reviewCount: 1247,
+      ),
+      Product(
+        id: '3',
+        name: 'Nike Air Max',
+        description: 'Comfortable and stylish sports shoes',
+        price: 129.99,
+        imageUrl: 'assets/images/products/nike-shoes.svg',
+        category: 'Fashion',
+        rating: 4.6,
+        reviewCount: 567,
+      ),
+      Product(
+        id: '5',
+        name: 'Adidas T-Shirt',
+        description: 'Sports t-shirt in organic cotton',
+        price: 29.99,
+        imageUrl: 'assets/images/products/adidas-tshirt.svg',
+        category: 'Fashion',
+        rating: 4.5,
+        reviewCount: 234,
+      ),
+    ];
+
+    // Add products to cart
+    for (final product in demoProducts) {
+      cartProvider.addItem(product);
+    }
+
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Demo items added to cart!'),
+        duration: Duration(seconds: 2),
       ),
     );
   }
